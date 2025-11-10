@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LevCode</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar: File Explorer -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Files</h2>
+            </div>
+            <div id="file-explorer" class="file-explorer">
+                <!-- File tree will be rendered here by JavaScript -->
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <button id="save-btn" class="toolbar-btn" title="Save (Ctrl+S)">
+                    Save
+                </button>
+                <button id="run-btn" class="toolbar-btn" title="Run">
+                    Run
+                </button>
+                <span id="file-status" class="file-status"></span>
+            </div>
+
+            <!-- Editor Pane -->
+            <div id="editor-container" class="editor-container">
+                <textarea id="editor" class="editor" placeholder="Open a .lvl file to start editing..."></textarea>
+            </div>
+
+            <!-- Output Panel (for compilation results) -->
+            <div id="output-panel" class="output-panel hidden">
+                <div class="output-header">
+                    <span>Output</span>
+                    <button id="close-output" class="close-btn">×</button>
+                </div>
+                <pre id="output-content" class="output-content"></pre>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification" class="notification hidden"></div>
+
+    <!-- JavaScript Modules -->
+    <script type="text/javascript" src="/eel.js"></script>
+    <script type="module" src="js/file_explorer.js"></script>
+    <script type="module" src="js/editor.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

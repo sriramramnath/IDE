@@ -1,0 +1,1 @@
+([('LevCode', '/Users/sriram/Desktop/Code/IDE/dist/LevCode', 'EXECUTABLE')],)
