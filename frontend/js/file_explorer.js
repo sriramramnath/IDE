@@ -131,12 +131,26 @@ function createFileTreeItem(item, parentPath) {
  */
 function getFileIcon(item) {
     if (item.type === 'dir') {
-        return explorerState.expandedDirs.has(item.path) ? '📂' : '📁';
+        return explorerState.expandedDirs.has(item.path) ? '▼' : '▶';
     }
     
     // File icons based on extension
-    if (item.extension === '.lvl') {
+    const ext = item.extension || '';
+    
+    if (ext === '.lvl') {
         return '📄';
+    } else if (ext === '.kt') {
+        return '🔷';
+    } else if (ext === '.java') {
+        return '☕';
+    } else if (ext === '.js' || ext === '.ts') {
+        return '📜';
+    } else if (ext === '.py') {
+        return '🐍';
+    } else if (ext === '.json') {
+        return '{}';
+    } else if (ext === '.md') {
+        return '📝';
     }
     
     return '📄';
@@ -175,7 +189,7 @@ async function expandDirectory(dirPath) {
     // Update icon
     const icon = dirElement.querySelector('.file-icon');
     if (icon) {
-        icon.textContent = '📂';
+        icon.textContent = '▼';
     }
     
     // Check if children container already exists
@@ -211,7 +225,7 @@ function collapseDirectory(dirPath) {
     // Update icon
     const icon = dirElement.querySelector('.file-icon');
     if (icon) {
-        icon.textContent = '📁';
+        icon.textContent = '▶';
     }
     
     // Hide children container

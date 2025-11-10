@@ -8,43 +8,87 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar: File Explorer -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Files</h2>
+        <!-- Top Toolbar -->
+        <div class="top-toolbar">
+            <div class="toolbar-icons">
+                <button class="icon-btn" title="Project Structure">⚙</button>
+                <button class="icon-btn" title="Split Vertical">⬜</button>
+                <button class="icon-btn" title="Split Horizontal">▭</button>
+                <button class="icon-btn" title="More">⋮</button>
             </div>
-            <div id="file-explorer" class="file-explorer">
-                <!-- File tree will be rendered here by JavaScript -->
+            <div class="toolbar-title">
+                <span id="project-name">jetsave</span>
             </div>
-        </aside>
+            <div class="toolbar-actions">
+                <button class="icon-btn" title="VCS">⎇</button>
+                <button id="run-btn" class="icon-btn run-btn" title="Run">▶</button>
+                <button class="icon-btn" title="Search">🔍</button>
+                <button class="icon-btn" title="Settings">⚙</button>
+            </div>
+        </div>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Toolbar -->
-            <div class="toolbar">
-                <button id="save-btn" class="toolbar-btn" title="Save (Ctrl+S)">
-                    Save
-                </button>
-                <button id="run-btn" class="toolbar-btn" title="Run">
-                    Run
-                </button>
-                <span id="file-status" class="file-status"></span>
-            </div>
-
-            <!-- Editor Pane -->
-            <div id="editor-container" class="editor-container">
-                <textarea id="editor" class="editor" placeholder="Open a .lvl file to start editing..."></textarea>
-            </div>
-
-            <!-- Output Panel (for compilation results) -->
-            <div id="output-panel" class="output-panel hidden">
-                <div class="output-header">
-                    <span>Output</span>
-                    <button id="close-output" class="close-btn">×</button>
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Left Sidebar: Project Navigation -->
+            <aside class="left-sidebar">
+                <div class="sidebar-tabs">
+                    <button class="sidebar-tab active" data-tab="files" title="Files">📁</button>
+                    <button class="sidebar-tab" data-tab="git" title="Git">⎇</button>
+                    <button class="sidebar-tab" data-tab="history" title="History">🕐</button>
                 </div>
-                <pre id="output-content" class="output-content"></pre>
-            </div>
-        </main>
+            </aside>
+
+            <!-- File Explorer Panel -->
+            <aside class="file-panel">
+                <div class="panel-header">
+                    <div class="panel-tabs">
+                        <button class="panel-tab active">Files</button>
+                        <button class="panel-tab">Git</button>
+                        <button class="panel-tab">History</button>
+                    </div>
+                </div>
+                <div id="file-explorer" class="file-explorer">
+                    <!-- File tree will be rendered here by JavaScript -->
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Tab Bar -->
+                <div class="tab-bar">
+                    <div id="editor-tabs" class="editor-tabs">
+                        <!-- Tabs will be added dynamically -->
+                    </div>
+                </div>
+
+                <!-- Editor Pane -->
+                <div id="editor-container" class="editor-container">
+                    <div class="line-numbers" id="line-numbers"></div>
+                    <textarea id="editor" class="editor" placeholder="Open a .lvl file to start editing..." spellcheck="false"></textarea>
+                </div>
+
+                <!-- Bottom Status Bar -->
+                <div class="status-bar">
+                    <div class="status-left">
+                        <span id="breadcrumb" class="breadcrumb">main / kotlin / com / jet / save / controllers / CategoryRestController.kt</span>
+                    </div>
+                    <div class="status-right">
+                        <span id="line-col" class="status-item">Ln 17, Col 42</span>
+                        <span class="status-item">UTF-8</span>
+                        <span class="status-item">Kotlin</span>
+                    </div>
+                </div>
+
+                <!-- Output Panel (for compilation results) -->
+                <div id="output-panel" class="output-panel hidden">
+                    <div class="output-header">
+                        <span>Output</span>
+                        <button id="close-output" class="close-btn">×</button>
+                    </div>
+                    <pre id="output-content" class="output-content"></pre>
+                </div>
+            </main>
+        </div>
     </div>
 
     <!-- Notification System -->

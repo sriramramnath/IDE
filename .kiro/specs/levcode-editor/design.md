@@ -172,6 +172,7 @@ def compile_and_run(file_path: str) -> dict:
 - Coordinate between editor and file explorer
 - Handle global keyboard shortcuts
 - Manage application-level events
+- Manage tab state for multiple open files
 
 **Key Functions:**
 ```javascript
@@ -186,33 +187,55 @@ function handleSaveShortcut(event) {
 function showNotification(message, type) {
     // Display user feedback messages
 }
+
+function openTab(filePath) {
+    // Open file in new tab or switch to existing tab
+}
+
+function closeTab(filePath) {
+    // Close tab and handle unsaved changes
+}
+
+function updateStatusBar(lineNum, colNum, encoding, fileType) {
+    // Update status bar information
+}
 ```
 
 #### 2. File Explorer Component (file_explorer.js)
 
 **Responsibilities:**
-- Display directory tree structure
-- Handle directory expansion/collapse
+- Display directory tree structure with icons
+- Handle directory expansion/collapse with chevron indicators
 - Trigger file loading on selection
-- Maintain explorer state
+- Maintain explorer state (expanded folders, selected file)
+- Show hover states for better UX
 
 **Key Functions:**
 ```javascript
 async function loadDirectory(path) {
     // Call backend to get directory contents
-    // Render directory tree
+    // Render directory tree with icons
 }
 
 function handleFileClick(filePath) {
-    // Load file into editor
+    // Load file into editor and open tab
+    // Update selection state
 }
 
 function handleDirectoryClick(dirPath) {
     // Toggle directory expansion
+    // Update chevron icon (▶ ↔ ▼)
 }
 
-function renderFileTree(items, parentElement) {
+function renderFileTree(items, parentElement, level = 0) {
     // Recursively render directory structure
+    // Add proper indentation based on level
+    // Add folder/file icons and chevrons
+}
+
+function updateSelection(filePath) {
+    // Highlight selected file
+    // Remove previous selection
 }
 ```
 
@@ -221,29 +244,83 @@ function renderFileTree(items, parentElement) {
 **Responsibilities:**
 - Initialize code editor instance
 - Track file state (modified, saved)
-- Handle editor events
+- Handle editor events (typing, cursor movement)
 - Provide save functionality
+- Update status bar with cursor position
 
 **Key Functions:**
 ```javascript
 function initializeEditor() {
     // Create editor instance with configuration
+    // Set up event listeners for cursor movement
 }
 
 function loadFileContent(filePath, content) {
     // Load content into editor and update state
+    // Update tab title
 }
 
 async function saveCurrentFile() {
     // Save editor content to backend
+    // Update tab state (remove modified indicator)
 }
 
 function markAsModified() {
-    // Update UI to show unsaved changes
+    // Update tab to show unsaved changes (dot indicator)
 }
 
 function markAsSaved() {
-    // Update UI to show saved state
+    // Update tab to show saved state
+}
+
+function onCursorMove(lineNum, colNum) {
+    // Update status bar with cursor position
+}
+
+function getEditorState() {
+    // Return current line, column, content
+}
+```
+
+#### 4. Tab Manager Component (tabs.js)
+
+**Responsibilities:**
+- Manage multiple open file tabs
+- Track active tab
+- Handle tab switching
+- Handle tab closing with unsaved changes warning
+- Render tab bar UI
+
+**Key Functions:**
+```javascript
+function createTab(filePath, fileName) {
+    // Create new tab element
+    // Add to tab bar
+    // Set as active tab
+}
+
+function switchTab(filePath) {
+    // Switch to specified tab
+    // Load file content in editor
+    // Update active state
+}
+
+function closeTab(filePath, force = false) {
+    // Check for unsaved changes
+    // Prompt user if needed
+    // Remove tab and switch to adjacent tab
+}
+
+function updateTabState(filePath, isModified) {
+    // Update tab visual state (modified indicator)
+}
+
+function getActiveTab() {
+    // Return currently active tab info
+}
+
+function getAllTabs() {
+    // Return array of all open tabs
 }
 ```
 
@@ -255,17 +332,39 @@ function markAsSaved() {
     name: string,        // File or directory name
     type: 'file' | 'dir', // Item type
     path: string,        // Absolute path
-    extension: string    // File extension (files only)
+    extension: string,   // File extension (files only)
+    isExpanded: boolean  // Directory expansion state (dirs only)
+}
+```
+
+### Tab State
+```javascript
+{
+    filePath: string,      // Absolute path to file
+    fileName: string,      // Display name
+    content: string,       // File content
+    isModified: boolean,   // Has unsaved changes
+    isActive: boolean,     // Currently active tab
+    cursorLine: number,    // Current cursor line
+    cursorColumn: number   // Current cursor column
 }
 ```
 
 ### Editor State
 ```javascript
 {
-    currentFile: string | null,  // Path of currently open file
-    content: string,             // Current editor content
-    isModified: boolean,         // Has unsaved changes
-    isSaving: boolean           // Save operation in progress
+    tabs: Tab[],                 // Array of open tabs
+    activeTabPath: string | null, // Path of active tab
+    isSaving: boolean            // Save operation in progress
+}
+```
+
+### File Explorer State
+```javascript
+{
+    rootPath: string,            // Root directory path
+    expandedDirs: Set<string>,   // Set of expanded directory paths
+    selectedFile: string | null  // Currently selected file path
 }
 ```
 
@@ -323,39 +422,95 @@ function markAsSaved() {
 ### Layout Structure
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  LevCode                                    [_][□][X]│
-├──────────┬──────────────────────────────────────────┤
-│          │  [Save] [Run]                            │
-│  Files   ├──────────────────────────────────────────┤
-│          │                                           │
-│  📁 src  │                                           │
-│    📄 a  │         Editor Pane                       │
-│    📄 b  │                                           │
-│  📁 test │                                           │
-│          │                                           │
-│          │                                           │
-└──────────┴──────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│ ● ● ●  LevCode                                      [_][□][X]│
+├──────────┬──────────────────────────────────────────────────┤
+│          │  📄 CategoryRestController.kt              ×     │
+│  Files   ├──────────────────────────────────────────────────┤
+│          │  [Save] [Run]                                    │
+│  ▼ 📁 src├──────────────────────────────────────────────────┤
+│    ▼ 📁 m│                                                   │
+│      📄 C│         Editor Pane                               │
+│      📄 C│         (Code content with syntax highlighting)   │
+│      📄 E│                                                   │
+│    ▶ 📁 d│                                                   │
+│  ▶ 📁 tes│                                                   │
+│          │                                                   │
+├──────────┴──────────────────────────────────────────────────┤
+│ Ln 17, Col 42  UTF-8  Kotlin                                │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### Visual Design Principles
 
-1. **Flat Design**: No shadows, gradients, or 3D effects
-2. **Minimal Chrome**: Remove unnecessary borders and decorations
-3. **Clear Hierarchy**: Use size and spacing to establish importance
-4. **Monochrome Base**: Use neutral colors with subtle accents
-5. **Consistent Spacing**: 8px grid system for alignment
+1. **IDE-Inspired Design**: Professional appearance similar to IntelliJ IDEA, VS Code
+2. **Dark Theme**: High contrast dark theme for reduced eye strain
+3. **Clear Hierarchy**: Use size, spacing, and color to establish visual importance
+4. **Icon System**: Consistent folder and file icons with expand/collapse indicators
+5. **Consistent Spacing**: 8px grid system for alignment and padding
+6. **Subtle Interactions**: Hover states and smooth transitions for better UX
 
-### Color Scheme (Example)
+### Color Scheme
 
 ```css
---bg-primary: #1e1e1e;      /* Main background */
---bg-secondary: #252526;    /* Sidebar background */
---text-primary: #cccccc;    /* Main text */
---text-secondary: #858585;  /* Secondary text */
---accent: #007acc;          /* Interactive elements */
---border: #3e3e3e;          /* Subtle borders */
+/* Dark Theme - High Contrast */
+--bg-primary: #1e1e1e;        /* Main editor background */
+--bg-secondary: #252526;      /* Sidebar background */
+--bg-tertiary: #2d2d30;       /* Hover states */
+--bg-titlebar: #323233;       /* Title bar background */
+--text-primary: #cccccc;      /* Main text */
+--text-secondary: #858585;    /* Secondary text */
+--text-muted: #6a6a6a;        /* Muted text */
+--accent-blue: #007acc;       /* Primary accent */
+--accent-blue-hover: #1a8cd8; /* Accent hover state */
+--border: #3e3e3e;            /* Subtle borders */
+--border-light: #454545;      /* Lighter borders */
+--selection: #264f78;         /* Selection background */
+--error: #f48771;             /* Error states */
+--success: #89d185;           /* Success states */
+--warning: #dcdcaa;           /* Warning states */
 ```
+
+### Component Specifications
+
+#### Title Bar
+- Height: 32px
+- Background: `--bg-titlebar`
+- Contains: Traffic lights (macOS) or window controls (Windows/Linux), app title
+- Font: 13px, medium weight
+- Non-draggable buttons, draggable background
+
+#### Tab Bar
+- Height: 36px
+- Background: `--bg-secondary`
+- Tab styling: Rounded top corners, active tab has `--bg-primary` background
+- Close button (×) on each tab
+- Maximum visible tabs: 10 (scroll for more)
+
+#### Toolbar
+- Height: 40px
+- Background: `--bg-secondary`
+- Button styling: Flat with hover states, 28px height
+- Spacing: 8px between buttons
+
+#### File Explorer
+- Width: 240px (resizable)
+- Background: `--bg-secondary`
+- Item height: 24px
+- Indent per level: 16px
+- Icons: 
+  - Collapsed folder: ▶ 📁
+  - Expanded folder: ▼ 📁
+  - File: 📄
+- Hover state: `--bg-tertiary`
+- Selected state: `--accent-blue`
+
+#### Status Bar
+- Height: 24px
+- Background: `--bg-titlebar`
+- Font: 12px
+- Sections: Line/Col info, encoding, file type
+- Spacing: 16px between sections
 
 ## Testing Strategy
 
