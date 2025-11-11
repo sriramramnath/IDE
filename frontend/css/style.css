@@ -5,19 +5,23 @@
     --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
 
-    /* Fleet-like Dark Palette */
-    --bg-dark-gray: #1a1b1e;
-    --bg-gray: #2c2d30;
-    --bg-light-gray: #3c3d40;
-    --bg-white: #ffffff;
-    --text-primary: #d0d0d0;
-    --text-secondary: #8c8c8c;
-    --text-muted: #606060;
-    --accent-blue: #3574f0;
-    --accent-blue-hover: #4a81f2;
-    --accent-green: #34d399;
-    --border-color: #3a3b3e;
-    --selection-bg: rgba(53, 116, 240, 0.4);
+    /* Fleet-inspired dark theme (tuned to screenshot) */
+    --bg-canvas: #0f1113; /* page canvas */
+    --island-bg: #17181a; /* island surface */
+    --island-inner: #0c0d0f; /* inner editor surface */
+    --island-border: rgba(255,255,255,0.03);
+    --panel-accent: rgba(255,255,255,0.02);
+    --text-primary: #e6e7e8;
+    --text-secondary: #9aa0a6;
+    --text-muted: #6b6f73;
+    --accent-blue: #2970ff; /* active tab accent */
+    --accent-blue-strong: #1e6ff1;
+    --accent-selected: #1672ff; /* explorer selection */
+    --gutter-bg: #101214;
+    --gutter-text: #9aa0a6;
+    --editor-bg: #0b0c0e;
+    --panel-padding: 12px;
+    --tab-gap: 10px;
 
     /* Layout */
     --toolbar-height: 48px;
@@ -38,7 +42,7 @@ body {
     font-size: 14px;
     line-height: 1.5;
     color: var(--text-primary);
-    background-color: var(--bg-dark-gray);
+    background-color: var(--bg-canvas);
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -55,18 +59,19 @@ body {
 /* Top Toolbar */
 .top-toolbar {
     height: var(--toolbar-height);
-    background-color: var(--bg-dark-gray);
-    border-bottom: 1px solid var(--border-color);
+    background-color: transparent;
+    border-bottom: 1px solid var(--glass-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px;
+    padding: 8px 18px;
     flex-shrink: 0;
 }
 
 .toolbar-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
+    color: var(--text-primary);
 }
 
 .toolbar-actions {
@@ -90,7 +95,7 @@ body {
 }
 
 .icon-btn:hover {
-    background-color: var(--bg-light-gray);
+    background-color: rgba(255,255,255,0.02);
     color: var(--text-primary);
 }
 
@@ -103,46 +108,67 @@ body {
     display: flex;
     flex: 1;
     overflow: hidden;
+    padding: 28px; /* give canvas padding for islands */
+    gap: 20px;
+}
+
+/* Canvas that holds islands - matches Fleet single canvas */
+.islands-canvas {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 20px;
+    align-items: stretch;
+    padding: 18px 20px;
 }
 
 /* File Explorer Panel */
 .file-panel {
-    width: var(--sidebar-width);
-    background-color: var(--bg-gray);
-    border-right: 1px solid var(--border-color);
+    width: 260px;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    background: var(--island-bg);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: none;
+    border: 1px solid rgba(255,255,255,0.02);
 }
 
 .panel-header {
-    height: var(--tab-height);
-    border-bottom: 1px solid var(--border-color);
+    height: 44px;
     display: flex;
     align-items: center;
-    padding: 0 16px;
-    font-weight: 500;
+    padding: 0 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+    margin-bottom: 8px;
 }
 
 .file-explorer {
     flex: 1;
     overflow-y: auto;
-    padding: 8px;
+    padding: 6px 4px;
 }
 
 /* Main Content Area */
-.main-content {
+.editor-panel {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    background: var(--island-bg);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: none;
+    border: 1px solid rgba(255,255,255,0.02);
 }
 
 /* Tab Bar */
 .tab-bar {
     height: var(--tab-height);
-    background-color: var(--bg-gray);
-    border-bottom: 1px solid var(--border-color);
+    background-color: transparent;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
     display: flex;
     align-items: center;
     overflow-x: auto;
@@ -152,14 +178,17 @@ body {
 .editor-tabs {
     display: flex;
     height: 100%;
+    gap: var(--tab-gap);
+    padding: 8px 10px;
+    align-items: flex-end;
 }
 
 .editor-tab {
     height: 100%;
-    padding: 0 16px;
+    padding: 6px 12px;
     background-color: transparent;
     border: none;
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid rgba(255,255,255,0.00);
     color: var(--text-secondary);
     cursor: pointer;
     display: flex;
@@ -168,34 +197,62 @@ body {
     font-size: 13px;
     white-space: nowrap;
     transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0;
 }
 
 .editor-tab:hover {
-    background-color: var(--bg-light-gray);
+    background-color: rgba(255,255,255,0.02);
     color: var(--text-primary);
 }
 
 .editor-tab.active {
-    background-color: var(--bg-dark-gray);
+    background: rgba(255,255,255,0.02);
     color: var(--text-primary);
-    border-bottom: 2px solid var(--accent-blue);
+    box-shadow: none;
+    border-top: 3px solid var(--accent-blue);
+    transform: translateY(0);
+}
+
+/* Pinned tab styling */
+.editor-tab.pinned {
+    border-radius: 8px 8px 0 0;
+    background: linear-gradient(180deg, rgba(59,130,246,0.08), transparent);
+    color: var(--text-primary);
+    position: relative;
+}
+.editor-tab.pinned .close-tab {
+    display: none; /* pinned tabs cannot be closed */
+}
+
+/* Small pin indicator */
+.editor-tab .pin-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--accent-blue-strong);
+    display: inline-block;
+    margin-right: 6px;
+    box-shadow: 0 2px 6px rgba(59,130,246,0.18);
 }
 
 .close-tab {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    font-size: 14px;
-    opacity: 0.7;
-    transition: all 0.2s ease;
+    border-radius: 6px;
+    font-size: 12px;
+    opacity: 0.85;
+    transition: background 0.12s ease, color 0.12s ease, transform 0.08s ease;
+    background: transparent;
+    color: var(--text-secondary);
 }
 
 .close-tab:hover {
-    background-color: var(--bg-light-gray);
-    opacity: 1;
+    background: rgba(255,255,255,0.03);
+    color: var(--text-primary);
+    transform: translateY(-1px);
 }
 
 /* Editor Container */
@@ -206,31 +263,67 @@ body {
     position: relative;
 }
 
+.editor-surface {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 0;
+    align-items: stretch;
+}
+
+.gutter {
+    width: 58px;
+    background: var(--gutter-bg);
+    border-right: 1px solid rgba(255,255,255,0.02);
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 8px;
+}
+
 .line-numbers {
-    width: 60px;
-    background-color: var(--bg-dark-gray);
-    color: var(--text-muted);
+    color: var(--gutter-text);
     font-family: var(--font-mono);
     font-size: 12px;
     line-height: 1.6;
-    padding: 16px 8px;
-    text-align: right;
     user-select: none;
 }
 
+.editor-area {
+    flex: 1 1 auto;
+    background: var(--editor-bg);
+    padding: 14px;
+    min-width: 0;
+}
+
 .editor {
-    flex: 1;
-    padding: 16px;
-    background-color: var(--bg-dark-gray);
-    color: var(--text-primary);
+    width: 100%;
+    height: 100%;
+    min-height: 240px;
+    resize: none;
     border: none;
     outline: none;
+    color: var(--text-primary);
+    background: transparent;
     font-family: var(--font-mono);
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.6;
-    resize: none;
     tab-size: 4;
-    overflow: auto;
+}
+
+/* Inner editor surface to look like the Fleet editor area */
+.editor-surface {
+    display: flex;
+    flex: 1;
+    background: var(--editor-bg);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Place the line numbers and text area inside the surface */
+.editor-surface .line-numbers {
+    background: rgba(255,255,255,0.02);
+}
+.editor-surface .editor {
+    background: transparent;
 }
 
 .editor::selection {
@@ -239,16 +332,24 @@ body {
 
 /* Status Bar */
 .status-bar {
-    height: var(--status-bar-height);
-    background-color: var(--bg-dark-gray);
-    border-top: 1px solid var(--border-color);
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px;
+    padding: 0 12px;
     font-size: 12px;
-    color: var(--text-secondary);
-    flex-shrink: 0;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(255,255,255,0.02);
+    margin-top: 12px;
+    border-radius: 0 0 10px 10px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
+}
+
+.status-bar .status-left {
+    color: var(--text-muted);
+}
+.status-bar .status-right {
+    color: var(--text-muted);
 }
 
 .status-left, .status-right {
@@ -315,13 +416,13 @@ body {
     bottom: 20px;
     right: 20px;
     padding: 12px 18px;
-    background-color: var(--bg-light-gray);
-    border: 1px solid var(--border-color);
+    background-color: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.02);
     border-radius: 6px;
     color: var(--text-primary);
     font-size: 13px;
     z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: none;
     animation: fadeIn 0.3s ease;
 }
 
@@ -363,13 +464,14 @@ body {
 }
 
 .file-tree-item:hover {
-    background-color: var(--bg-light-gray);
+    background-color: rgba(255,255,255,0.02);
     color: var(--text-primary);
 }
 
 .file-tree-item.selected {
-    background-color: var(--accent-blue);
+    background-color: var(--accent-blue-strong);
     color: var(--bg-white);
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);
 }
 
 .file-tree-item.directory {

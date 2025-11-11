@@ -198,6 +198,15 @@ export function loadFileContent(filePath, content) {
     
     // Set editor content
     editorState.editor.value = content;
+    // Ensure the view starts at the top for large files and cursor at start
+    try {
+        editorState.editor.selectionStart = editorState.editor.selectionEnd = 0;
+        editorState.editor.scrollTop = 0;
+        const lineNumbersEl = document.getElementById('line-numbers');
+        if (lineNumbersEl) lineNumbersEl.scrollTop = 0;
+    } catch (e) {
+        // ignore if not supported
+    }
     
     // Add or activate tab
     addOrActivateTab(filePath);
@@ -233,7 +242,8 @@ function addOrActivateTab(filePath) {
     editorState.openTabs.push({
         path: filePath,
         name: fileName,
-        modified: false
+        modified: false,
+        pinned: false
     });
     
     editorState.activeTab = filePath;
@@ -252,6 +262,7 @@ function renderTabs() {
     editorState.openTabs.forEach(tab => {
         const tabEl = document.createElement('div');
         tabEl.className = 'editor-tab';
+        if (tab.pinned) tabEl.classList.add('pinned');
         if (tab.path === editorState.activeTab) {
             tabEl.classList.add('active');
         }
@@ -260,14 +271,30 @@ function renderTabs() {
         nameEl.textContent = tab.name + (tab.modified ? ' •' : '');
         tabEl.appendChild(nameEl);
         
+        // Pin indicator (visible when pinned)
+        if (tab.pinned) {
+            const pin = document.createElement('span');
+            pin.className = 'pin-indicator';
+            tabEl.insertBefore(pin, nameEl);
+        }
+
         const closeBtn = document.createElement('span');
         closeBtn.className = 'close-tab';
         closeBtn.textContent = '×';
         closeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            // Do not allow closing pinned tabs
+            if (tab.pinned) return;
             closeTab(tab.path);
         });
         tabEl.appendChild(closeBtn);
+
+        // Right-click to toggle pinned state
+        tabEl.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            togglePinTab(tab.path);
+        });
         
         tabEl.addEventListener('click', () => {
             switchToTab(tab.path);
@@ -275,6 +302,26 @@ function renderTabs() {
         
         tabsContainer.appendChild(tabEl);
     });
+}
+
+/**
+ * Toggle pin/unpin state for a tab
+ * @param {string} filePath - Path of the tab to toggle
+ */
+function togglePinTab(filePath) {
+    const tab = editorState.openTabs.find(t => t.path === filePath);
+    if (!tab) return;
+
+    tab.pinned = !tab.pinned;
+
+    // If pinned, move to the left (beginning), if unpinned leave order as-is
+    if (tab.pinned) {
+        // move item to front
+        editorState.openTabs = editorState.openTabs.filter(t => t.path !== filePath);
+        editorState.openTabs.unshift(tab);
+    }
+
+    renderTabs();
 }
 
 /**
@@ -295,7 +342,10 @@ async function switchToTab(filePath) {
 function closeTab(filePath) {
     const tabIndex = editorState.openTabs.findIndex(tab => tab.path === filePath);
     if (tabIndex === -1) return;
-    
+    const tab = editorState.openTabs[tabIndex];
+    // Prevent closing pinned tabs
+    if (tab && tab.pinned) return;
+
     // Remove tab
     editorState.openTabs.splice(tabIndex, 1);
     
