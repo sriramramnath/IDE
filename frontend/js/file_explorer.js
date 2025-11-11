@@ -100,7 +100,7 @@ function createFileTreeItem(item, parentPath) {
     // Add icon
     const icon = document.createElement('span');
     icon.className = 'file-icon';
-    icon.textContent = getFileIcon(item);
+    icon.innerHTML = getFileIcon(item); // Use innerHTML for SVG icons
     itemDiv.appendChild(icon);
     
     // Add file/directory name
@@ -127,33 +127,34 @@ function createFileTreeItem(item, parentPath) {
 /**
  * Get icon for file or directory
  * @param {Object} item - File or directory item
- * @returns {string} Icon character
+ * @returns {string} Icon character or SVG
  */
 function getFileIcon(item) {
     if (item.type === 'dir') {
-        return explorerState.expandedDirs.has(item.path) ? '▼' : '▶';
+        return explorerState.expandedDirs.has(item.path) ? '&#9662;' : '&#9656;'; // Down/Right arrows
     }
     
-    // File icons based on extension
     const ext = item.extension || '';
-    
-    if (ext === '.lvl') {
-        return '📄';
-    } else if (ext === '.kt') {
-        return '🔷';
-    } else if (ext === '.java') {
-        return '☕';
-    } else if (ext === '.js' || ext === '.ts') {
-        return '📜';
-    } else if (ext === '.py') {
-        return '🐍';
-    } else if (ext === '.json') {
-        return '{}';
-    } else if (ext === '.md') {
-        return '📝';
+    switch (ext) {
+        case '.lvl':
+            return '&#128196;'; // Page with curl
+        case '.kt':
+            return '&#128300;'; // Diamond
+        case '.java':
+            return '&#9749;'; // Coffee cup
+        case '.js':
+            return '<svg width="16" height="16" viewBox="0 0 16 16"><path fill="#f7df1e" d="M0 0h16v16H0z"/><path d="M4.32 11.36c.32.64.8 1.12 1.52 1.44.72.32 1.52.32 2.24 0 .72-.32 1.28-.8 1.6-1.44.32-.64.4-1.36.24-2.08-.16-.72-.48-1.36-.96-1.92-.48-.56-1.12-.96-1.84-1.2-1.44-.48-2.88.32-3.36 1.6-.48 1.28.32 2.72 1.6 3.2zm1.28-2.08c-.16-.48.16-.96.64-1.12.48-.16.96.16 1.12.64.16.48-.16.96-.64 1.12-.48.16-.96-.16-1.12-.64z"/></svg>';
+        case '.ts':
+            return '<svg width="16" height="16" viewBox="0 0 16 16"><path fill="#3178c6" d="M0 0h16v16H0z"/><path fill="#fff" d="M4.4 11.36h1.92v-1.2H7.6v-1.2h-1.28V4.4H4.4v7.96zm3.84-3.92c.32-.16.56-.4.72-.72.16-.32.24-.64.24-1.04 0-.4-.08-.72-.24-1.04-.16-.32-.4-.56-.72-.72-.32-.16-.64-.24-1.04-.24-.4 0-.72.08-1.04.24-.32.16-.56.4-.72.72-.16.32-.24.64-.24 1.04 0 .4.08.72.24 1.04.16.32.4.56.72.72.32.16.64.24 1.04.24.4 0 .72-.08 1.04-.24zm-.4-1.2c-.16-.08-.24-.24-.24-.48 0-.24.08-.4.24-.48.16-.08.32-.16.48-.16.16 0 .32.08.48.16.16.08.24.24.24.48 0 .24-.08.4-.24.48-.16.08-.32.16-.48.16-.16 0-.32-.08-.48-.16z"/></svg>';
+        case '.py':
+            return '&#128013;'; // Snake
+        case '.json':
+            return '{ }';
+        case '.md':
+            return '&#128221;'; // Memo
+        default:
+            return '&#128195;'; // File folder
     }
-    
-    return '📄';
 }
 
 /**
@@ -189,7 +190,7 @@ async function expandDirectory(dirPath) {
     // Update icon
     const icon = dirElement.querySelector('.file-icon');
     if (icon) {
-        icon.textContent = '▼';
+        icon.innerHTML = getFileIcon({ type: 'dir', path: dirPath });
     }
     
     // Check if children container already exists
@@ -225,13 +226,13 @@ function collapseDirectory(dirPath) {
     // Update icon
     const icon = dirElement.querySelector('.file-icon');
     if (icon) {
-        icon.textContent = '▶';
+        icon.innerHTML = getFileIcon({ type: 'dir', path: dirPath });
     }
     
     // Hide children container
     const childContainer = dirElement.nextElementSibling;
     if (childContainer && childContainer.classList.contains('file-tree-children')) {
-        childContainer.style.display = 'none';
+        childContainer.remove();
     }
 }
 

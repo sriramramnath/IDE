@@ -5,50 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LevCode</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
         <!-- Top Toolbar -->
         <div class="top-toolbar">
-            <div class="toolbar-icons">
-                <button class="icon-btn" title="Project Structure">⚙</button>
-                <button class="icon-btn" title="Split Vertical">⬜</button>
-                <button class="icon-btn" title="Split Horizontal">▭</button>
-                <button class="icon-btn" title="More">⋮</button>
-            </div>
-            <div class="toolbar-title">
-                <span id="project-name">jetsave</span>
-            </div>
+            <div class="toolbar-title">LevCode</div>
             <div class="toolbar-actions">
-                <button class="icon-btn" title="VCS">⎇</button>
-                <button id="run-btn" class="icon-btn run-btn" title="Run">▶</button>
-                <button class="icon-btn" title="Search">🔍</button>
-                <button class="icon-btn" title="Settings">⚙</button>
+                <button id="save-btn" class="icon-btn" title="Save File (Ctrl+S)">💾</button>
+                <button id="run-btn" class="icon-btn run-btn" title="Run File (Ctrl+R)">▶</button>
             </div>
         </div>
 
         <!-- Main Layout -->
         <div class="main-layout">
-            <!-- Left Sidebar: Project Navigation -->
-            <aside class="left-sidebar">
-                <div class="sidebar-tabs">
-                    <button class="sidebar-tab active" data-tab="files" title="Files">📁</button>
-                    <button class="sidebar-tab" data-tab="git" title="Git">⎇</button>
-                    <button class="sidebar-tab" data-tab="history" title="History">🕐</button>
-                </div>
-            </aside>
-
             <!-- File Explorer Panel -->
             <aside class="file-panel">
                 <div class="panel-header">
-                    <div class="panel-tabs">
-                        <button class="panel-tab active">Files</button>
-                        <button class="panel-tab">Git</button>
-                        <button class="panel-tab">History</button>
-                    </div>
+                    <span>Project</span>
                 </div>
                 <div id="file-explorer" class="file-explorer">
-                    <!-- File tree will be rendered here by JavaScript -->
+                    <!-- File tree will be rendered here -->
                 </div>
             </aside>
 
@@ -63,41 +43,40 @@
 
                 <!-- Editor Pane -->
                 <div id="editor-container" class="editor-container">
-                    <div class="line-numbers" id="line-numbers"></div>
-                    <textarea id="editor" class="editor" placeholder="Open a .lvl file to start editing..." spellcheck="false"></textarea>
+                    <div class="line-numbers" id="line-numbers">1</div>
+                    <textarea id="editor" class="editor" placeholder="Select a file to begin editing..." spellcheck="false"></textarea>
                 </div>
 
                 <!-- Bottom Status Bar -->
                 <div class="status-bar">
                     <div class="status-left">
-                        <span id="breadcrumb" class="breadcrumb">main / kotlin / com / jet / save / controllers / CategoryRestController.kt</span>
+                        <span id="breadcrumb">No file selected</span>
                     </div>
                     <div class="status-right">
-                        <span id="line-col" class="status-item">Ln 17, Col 42</span>
-                        <span class="status-item">UTF-8</span>
-                        <span class="status-item">Kotlin</span>
+                        <span id="line-col">Ln 1, Col 1</span>
+                        <span>UTF-8</span>
                     </div>
-                </div>
-
-                <!-- Output Panel (for compilation results) -->
-                <div id="output-panel" class="output-panel hidden">
-                    <div class="output-header">
-                        <span>Output</span>
-                        <button id="close-output" class="close-btn">×</button>
-                    </div>
-                    <pre id="output-content" class="output-content"></pre>
                 </div>
             </main>
         </div>
-    </div>
 
-    <!-- Notification System -->
-    <div id="notification" class="notification hidden"></div>
+        <!-- Output Panel (for compilation results) -->
+        <div id="output-panel" class="output-panel hidden">
+            <div class="output-header">
+                <span>Output</span>
+                <button id="close-output" class="close-btn">×</button>
+            </div>
+            <pre id="output-content" class="output-content"></pre>
+        </div>
+
+        <!-- Notification System -->
+        <div id="notification" class="notification hidden"></div>
+    </div>
 
     <!-- JavaScript Modules -->
     <script type="text/javascript" src="/eel.js"></script>
+    <script type="module" src="js/app.js"></script>
     <script type="module" src="js/file_explorer.js"></script>
     <script type="module" src="js/editor.js"></script>
-    <script type="module" src="js/app.js"></script>
 </body>
 </html>
