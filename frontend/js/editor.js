@@ -11,7 +11,8 @@ const editorState = {
     isSaving: false,
     editor: null,
     openTabs: [],
-    activeTab: null
+    activeTab: null,
+    highlightTimeout: null
 };
 
 /**
@@ -48,8 +49,14 @@ function setupEditorListeners() {
     // Update line numbers on scroll
     editorState.editor.addEventListener('scroll', syncLineNumbersScroll);
     
+    // Sync highlighting scroll
+    editorState.editor.addEventListener('scroll', syncHighlightingScroll);
+    
     // Update line numbers on input
     editorState.editor.addEventListener('input', updateLineNumbers);
+    
+    // Update syntax highlighting on input
+    editorState.editor.addEventListener('input', updateSyntaxHighlighting);
     
     // Update cursor position
     editorState.editor.addEventListener('click', updateCursorPosition);
@@ -87,10 +94,86 @@ function updateLineNumbers() {
  * Sync line numbers scroll with editor
  */
 function syncLineNumbersScroll() {
-    const lineNumbersEl = document.getElementById('line-numbers');
-    if (!lineNumbersEl || !editorState.editor) return;
+    const gutterEl = document.querySelector('.gutter');
+    if (!gutterEl || !editorState.editor) return;
     
-    lineNumbersEl.scrollTop = editorState.editor.scrollTop;
+    gutterEl.scrollTop = editorState.editor.scrollTop;
+}
+
+/**
+ * Sync highlighting scroll with editor
+ */
+function syncHighlightingScroll() {
+    const highlightingEl = document.getElementById('highlighting');
+    if (!highlightingEl || !editorState.editor) return;
+    
+    highlightingEl.scrollTop = editorState.editor.scrollTop;
+    highlightingEl.scrollLeft = editorState.editor.scrollLeft;
+}
+
+/**
+ * Get Prism language based on file extension
+ * @param {string} fileName - Name of the file
+ * @returns {string} Prism language identifier
+ */
+function getPrismLanguage(fileName) {
+    if (!fileName) return 'javascript';
+    
+    const ext = fileName.split('.').pop().toLowerCase();
+    
+    const languageMap = {
+        'js': 'javascript',
+        'jsx': 'javascript',
+        'ts': 'typescript',
+        'tsx': 'typescript',
+        'py': 'python',
+        'java': 'java',
+        'kt': 'kotlin',
+        'rs': 'rust',
+        'go': 'go',
+        'json': 'json',
+        'html': 'markup',
+        'htm': 'markup',
+        'xml': 'markup',
+        'css': 'css',
+        'scss': 'css',
+        'sass': 'css',
+        'md': 'markdown',
+        'markdown': 'markdown',
+        'lvl': 'javascript', // Default to JavaScript for LevLang
+    };
+    
+    return languageMap[ext] || 'javascript';
+}
+
+/**
+ * Update syntax highlighting (debounced for performance)
+ */
+function updateSyntaxHighlighting() {
+    // Clear existing timeout
+    if (editorState.highlightTimeout) {
+        clearTimeout(editorState.highlightTimeout);
+    }
+    
+    // Debounce highlighting for better performance
+    editorState.highlightTimeout = setTimeout(() => {
+        const highlightingContent = document.getElementById('highlighting-content');
+        if (!highlightingContent || !editorState.editor) return;
+        
+        const code = editorState.editor.value;
+        const language = getPrismLanguage(editorState.currentFile);
+        
+        // Update language class
+        highlightingContent.className = `language-${language}`;
+        
+        // Set content and highlight
+        highlightingContent.textContent = code;
+        
+        // Apply Prism highlighting if available
+        if (window.Prism) {
+            Prism.highlightElement(highlightingContent);
+        }
+    }, 50); // 50ms debounce
 }
 
 /**
@@ -215,6 +298,7 @@ export function loadFileContent(filePath, content) {
     updateFileStatus();
     updateLineNumbers();
     updateCursorPosition();
+    updateSyntaxHighlighting();
     
     // Focus the editor
     editorState.editor.focus();
@@ -251,6 +335,55 @@ function addOrActivateTab(filePath) {
 }
 
 /**
+ * Get file icon based on extension (SVG icons)
+ * @param {string} fileName - Name of the file
+ * @returns {string} Icon SVG
+ */
+function getFileIcon(fileName) {
+    const ext = fileName.split('.').pop().toLowerCase();
+    
+    // Common icon template
+    const iconTemplate = (paths) => `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+    
+    switch (ext) {
+        case 'lvl':
+        case 'txt':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>');
+        case 'js':
+        case 'jsx':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12h4"/><path d="M10 16h4"/>');
+        case 'ts':
+        case 'tsx':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M9 12h6"/><path d="M9 16h6"/>');
+        case 'py':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="14" r="2"/>');
+        case 'java':
+        case 'kt':
+        case 'scala':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 12h8"/><path d="M8 16h8"/>');
+        case 'json':
+        case 'xml':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/>');
+        case 'md':
+        case 'markdown':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h8"/><path d="M8 17h5"/>');
+        case 'html':
+        case 'htm':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 12l2 2-2 2"/><path d="M16 12l-2 2 2 2"/>');
+        case 'css':
+        case 'scss':
+        case 'sass':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><rect x="9" y="12" width="6" height="6" rx="1"/>');
+        case 'rs':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/>');
+        case 'go':
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="15" r="3"/>');
+        default:
+            return iconTemplate('<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>');
+    }
+}
+
+/**
  * Render tabs in the tab bar
  */
 function renderTabs() {
@@ -267,18 +400,24 @@ function renderTabs() {
             tabEl.classList.add('active');
         }
         
-        const nameEl = document.createElement('span');
-        nameEl.textContent = tab.name + (tab.modified ? ' •' : '');
-        tabEl.appendChild(nameEl);
+        // Add file icon
+        const iconEl = document.createElement('span');
+        iconEl.className = 'file-icon';
+        iconEl.innerHTML = getFileIcon(tab.name);
+        tabEl.appendChild(iconEl);
         
         // Pin indicator (visible when pinned)
         if (tab.pinned) {
             const pin = document.createElement('span');
             pin.className = 'pin-indicator';
-            tabEl.insertBefore(pin, nameEl);
+            tabEl.insertBefore(pin, iconEl);
         }
+        
+        const nameEl = document.createElement('span');
+        nameEl.textContent = tab.name + (tab.modified ? ' •' : '');
+        tabEl.appendChild(nameEl);
 
-        const closeBtn = document.createElement('span');
+        const closeBtn = document.createElement('button');
         closeBtn.className = 'close-tab';
         closeBtn.textContent = '×';
         closeBtn.addEventListener('click', (e) => {

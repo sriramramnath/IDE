@@ -95,6 +95,9 @@ function createFileTreeItem(item, parentPath) {
     
     if (item.type === 'dir') {
         itemDiv.classList.add('directory');
+        if (explorerState.expandedDirs.has(item.path)) {
+            itemDiv.classList.add('expanded');
+        }
     }
     
     // Add icon
@@ -131,29 +134,32 @@ function createFileTreeItem(item, parentPath) {
  */
 function getFileIcon(item) {
     if (item.type === 'dir') {
-        return explorerState.expandedDirs.has(item.path) ? '&#9662;' : '&#9656;'; // Down/Right arrows
+        const isExpanded = explorerState.expandedDirs.has(item.path);
+        return `<svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
     }
     
     const ext = item.extension || '';
     switch (ext) {
         case '.lvl':
-            return '&#128196;'; // Page with curl
+            return '📄';
         case '.kt':
-            return '&#128300;'; // Diamond
+            return '💎';
         case '.java':
-            return '&#9749;'; // Coffee cup
+            return '☕';
         case '.js':
-            return '<svg width="16" height="16" viewBox="0 0 16 16"><path fill="#f7df1e" d="M0 0h16v16H0z"/><path d="M4.32 11.36c.32.64.8 1.12 1.52 1.44.72.32 1.52.32 2.24 0 .72-.32 1.28-.8 1.6-1.44.32-.64.4-1.36.24-2.08-.16-.72-.48-1.36-.96-1.92-.48-.56-1.12-.96-1.84-1.2-1.44-.48-2.88.32-3.36 1.6-.48 1.28.32 2.72 1.6 3.2zm1.28-2.08c-.16-.48.16-.96.64-1.12.48-.16.96.16 1.12.64.16.48-.16.96-.64 1.12-.48.16-.96-.16-1.12-.64z"/></svg>';
+            return '📜';
         case '.ts':
-            return '<svg width="16" height="16" viewBox="0 0 16 16"><path fill="#3178c6" d="M0 0h16v16H0z"/><path fill="#fff" d="M4.4 11.36h1.92v-1.2H7.6v-1.2h-1.28V4.4H4.4v7.96zm3.84-3.92c.32-.16.56-.4.72-.72.16-.32.24-.64.24-1.04 0-.4-.08-.72-.24-1.04-.16-.32-.4-.56-.72-.72-.32-.16-.64-.24-1.04-.24-.4 0-.72.08-1.04.24-.32.16-.56.4-.72.72-.16.32-.24.64-.24 1.04 0 .4.08.72.24 1.04.16.32.4.56.72.72.32.16.64.24 1.04.24.4 0 .72-.08 1.04-.24zm-.4-1.2c-.16-.08-.24-.24-.24-.48 0-.24.08-.4.24-.48.16-.08.32-.16.48-.16.16 0 .32.08.48.16.16.08.24.24.24.48 0 .24-.08.4-.24.48-.16.08-.32.16-.48.16-.16 0-.32-.08-.48-.16z"/></svg>';
+            return '📘';
         case '.py':
-            return '&#128013;'; // Snake
+            return '🐍';
         case '.json':
-            return '{ }';
+            return '⚙️';
         case '.md':
-            return '&#128221;'; // Memo
+            return '📝';
+        case '.rs':
+            return '⚙️';
         default:
-            return '&#128195;'; // File folder
+            return '📄';
     }
 }
 
@@ -187,11 +193,8 @@ async function expandDirectory(dirPath) {
     const dirElement = document.querySelector(`.file-tree-item[data-path="${CSS.escape(dirPath)}"]`);
     if (!dirElement) return;
     
-    // Update icon
-    const icon = dirElement.querySelector('.file-icon');
-    if (icon) {
-        icon.innerHTML = getFileIcon({ type: 'dir', path: dirPath });
-    }
+    // Add expanded class for chevron rotation
+    dirElement.classList.add('expanded');
     
     // Check if children container already exists
     let childContainer = dirElement.nextElementSibling;
@@ -223,11 +226,8 @@ function collapseDirectory(dirPath) {
     const dirElement = document.querySelector(`.file-tree-item[data-path="${CSS.escape(dirPath)}"]`);
     if (!dirElement) return;
     
-    // Update icon
-    const icon = dirElement.querySelector('.file-icon');
-    if (icon) {
-        icon.innerHTML = getFileIcon({ type: 'dir', path: dirPath });
-    }
+    // Remove expanded class for chevron rotation
+    dirElement.classList.remove('expanded');
     
     // Hide children container
     const childContainer = dirElement.nextElementSibling;
