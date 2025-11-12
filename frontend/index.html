@@ -11,20 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Prism.js for Syntax Highlighting -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-kotlin.min.js"></script>
+    <!-- CodeMirror 6 for Syntax Highlighting -->
+    <script type="module">
+        // We'll initialize CodeMirror in the editor.js module
+    </script>
 </head>
 <body>
     <div class="app-container">
@@ -95,12 +85,13 @@
                 </div>
 
                 <div class="editor-surface">
-                    <div class="gutter">
-                        <pre id="line-numbers" class="line-numbers">1</pre>
-                    </div>
-                    <div class="editor-area">
-                        <pre id="highlighting" class="editor-highlighting" aria-hidden="true"><code id="highlighting-content" class="language-javascript"></code></pre>
-                        <textarea id="editor" class="editor" spellcheck="false" placeholder="Select a file to begin editing..."></textarea>
+                    <div class="editor-wrapper">
+                        <div class="gutter">
+                            <pre id="line-numbers" class="line-numbers">1</pre>
+                        </div>
+                        <div class="editor-area">
+                            <textarea id="editor" class="editor" spellcheck="false" placeholder="Select a file to begin editing..."></textarea>
+                        </div>
                     </div>
                 </div>
 
