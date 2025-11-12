@@ -73,7 +73,7 @@
                 <button class="icon-btn" title="Notifications">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
                 </button>
-                <button id="save-btn" class="icon-btn" title="Settings (Ctrl/Cmd+,)">
+                <button id="settings-btn" class="icon-btn" title="Settings (Ctrl/Cmd+,)">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
             </div>
@@ -133,6 +133,78 @@
         </div>
 
         <div id="notification" class="notification hidden" role="status" aria-live="polite"></div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button id="close-settings" class="close-btn">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h3>Editor</h3>
+                        <div class="setting-item">
+                            <label for="font-size">Font Size</label>
+                            <select id="font-size">
+                                <option value="10">10px</option>
+                                <option value="11">11px</option>
+                                <option value="12" selected>12px</option>
+                                <option value="13">13px</option>
+                                <option value="14">14px</option>
+                                <option value="16">16px</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="tab-size">Tab Size</label>
+                            <select id="tab-size">
+                                <option value="2">2 spaces</option>
+                                <option value="4" selected>4 spaces</option>
+                                <option value="8">8 spaces</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="word-wrap">
+                                <span>Word Wrap</span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="line-numbers" checked>
+                                <span>Show Line Numbers</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Theme</h3>
+                        <div class="setting-item">
+                            <label for="theme">Color Theme</label>
+                            <select id="theme">
+                                <option value="dark" selected>Dark (Minimalist)</option>
+                                <option value="darker">Darker</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>About</h3>
+                        <div class="setting-item">
+                            <p style="color: var(--text-secondary); font-size: 12px; line-height: 1.6;">
+                                LevCode - Modern IDE for LevLang<br>
+                                Version 1.0.0<br>
+                                Built with Eel and Python
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="reset-settings" class="btn-secondary">Reset to Defaults</button>
+                    <button id="save-settings" class="btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
 
     </div>
 

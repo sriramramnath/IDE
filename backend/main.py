@@ -16,6 +16,7 @@ if str(project_root) not in sys.path:
 # Import backend modules to register their @eel.expose decorated functions
 import backend.file_manager
 import backend.compiler
+import backend.search_git
 
 
 def get_initial_directory() -> str:
